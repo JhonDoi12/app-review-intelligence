@@ -1,0 +1,13 @@
+name: Scheduled scrape
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 2 * * 1"   # aktifkan di Langkah 2 setelah scraper siap
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Scraper belum diimplementasikan (Langkah 2)."
