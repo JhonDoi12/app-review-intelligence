@@ -12,10 +12,13 @@ dependencies = [
   "google-play-scraper>=1.2",
   "langdetect>=1.0.9",
   "scikit-learn>=1.4",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.1",
+  "python-dotenv>=1.0",
 ]
 
 [project.optional-dependencies]
-# model berat dipasang hanya saat diperlukan (Colab/Kaggle): pip install -e "./nlp[ml]"
+# model berat dipasang hanya saat diperlukan: pip install -e "./nlp[ml]"
 ml = ["torch", "transformers", "datasets", "bertopic", "Sastrawi"]
 dev = ["pytest", "ruff", "mypy"]
 
@@ -28,5 +31,9 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["review_nlp"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
