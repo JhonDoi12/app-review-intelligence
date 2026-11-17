@@ -85,6 +85,7 @@ reviews(
   reviewed_at,
   scraped_at,
   lang
+  exclude_reason
 )
 
 review_predictions(
@@ -160,7 +161,10 @@ Prediksi dipisah dari ulasan mentah agar model dapat diganti dan prediksi dapat 
 | 005 | Tanpa Redis di v1 | Beban awal kecil. | Redis ditambahkan di v2 bila performa menurun. |
 | 006 | Cron via GitHub Actions | Gratis dan mudah disiapkan. | Runtime Actions terbatas. |
 | 007 | Demo: data statis + inferensi ringan | Hosting model besar mahal. | Demo menggunakan snapshot. |
-| 008 | Sampling ulasan per bulan | Menghindari bias waktu. | Scraper perlu parameter rentang waktu. |
+| 008 | Ambil ulasan pada jendela 19 Agustus sampai 17 November 2026 (91 hari = 13 minggu
+penuh), maksimal 800 ulasan per minggu, sehingga total maksimal sekitar 10.400. | WhatsApp memiliki volume ulasan sangat besar. Untuk analisis sentimen, jumlah
+dan keberagaman ulasan lebih penting daripada rentang waktu yang panjang. | Tren mingguan memiliki 13 titik data, Tidak ada klaim tren jangka panjang; model dilatih pada satu jendela waktu, Scraper membaca dari ulasan terbaru mundur, sehingga waktu scraping bergantung
+  pada volume harian di jendela tersebut. |
 
 ## 2.7 Evolusi v2
 

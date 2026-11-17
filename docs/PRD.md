@@ -64,9 +64,9 @@ Target angka akan direvisi setelah fase riset.
 
 | ID | Kebutuhan | Prioritas |
 |---|---|---|
-| FR-01 | Scrape ulasan `com.whatsapp` dengan `lang=id` dan `country=id`; simpan tanpa duplikat berdasarkan `external_id`. | Must |
+| FR-01 | Scrape ulasan com.whatsapp (lang id, country id) pada jendela 91 hari dengan kuota 800 per minggu, tanpa duplikat (external_id). | Must |
 | FR-02 | Hash nama/ID pengguna sebelum disimpan. | Must |
-| FR-03 | Filter bahasa dan kualitas: buang ulasan non-Indonesia, kosong, atau kurang dari 3 kata. | Must |
+| FR-03 | Tandai (bukan hapus) ulasan kosong, kurang dari 3 kata, atau jelas bukan berbahasa Indonesia lewat kolom exclude_reason. | Must |
 | FR-04 | Preprocessing: case folding, hapus URL/emoji, normalisasi slang, dan stopword removal. | Must |
 | FR-05 | Weak labeling dari rating: 1–2 negatif, 3 netral, 4–5 positif. | Must |
 | FR-06 | Klasifikasi sentimen 3 kelas dan evaluasi pada gold set manual. | Must |
@@ -97,7 +97,7 @@ Target angka akan direvisi setelah fase riset.
 
 | Karakteristik | Dampak | Penanganan |
 |---|---|---|
-| Volume ulasan sangat besar | Sampel harus representatif. | Ambil sampel per rentang waktu (stratified by month), bukan hanya ulasan terbaru. |
+| Penanganan: “Jendela 91 hari + kuota per minggu, bukan sampel lintas bulan” | Sampel harus representatif. | Ambil sampel per rentang waktu (stratified by month), bukan hanya ulasan terbaru. |
 | Banyak ulasan sangat pendek (“bagus”, “mantap”) | Informasi topik minim. | Filter minimal 3 kata; laporkan jumlah yang dibuang. |
 | Bahasa campuran meski filter `id` | Noise bahasa. | Deteksi bahasa (`langdetect`/`fasttext`), buang non-Indonesia. |
 | Topik keluhan khas: verifikasi/OTP, backup chat, akun diblokir, update tampilan, iklan di Status, privasi/kebijakan | Hipotesis awal topik. | Gunakan sebagai hipotesis awal BERTopic dan validasi dari data. |
@@ -108,14 +108,13 @@ Target angka akan direvisi setelah fase riset.
 
 ## 1.9 Metodologi
 
-1. Scrape ulasan per rentang waktu dan simpan snapshot berversi.
-2. Bersihkan data: filter bahasa, buang ulasan kosong dan terlalu pendek.
-3. Weak labeling dari rating; lakukan stratified split train/validation/test.
-4. Buat gold set berisi 300–500 ulasan yang dilabeli manual (`labeling-guideline.md`).
-5. Bangun baseline TF-IDF + Logistic Regression.
-6. Fine-tune IndoBERT (Colab/Kaggle) dan simpan model ke HuggingFace Hub.
-7. Bandingkan macro-F1 pada gold set; evaluasi skenario 3 kelas vs 2 kelas (tanpa rating bintang 3).
-8. Jalankan BERTopic pada ulasan negatif; evaluasi coherence dan beri label topik secara manual.
+1. Sesuaikan dengan jendela 91 hari dan penandaan eksklusi.
+2. Weak labeling dari rating; lakukan stratified split train/validation/test.
+3. Buat gold set berisi 300–500 ulasan yang dilabeli manual (`labeling-guideline.md`).
+4. Bangun baseline TF-IDF + Logistic Regression.
+5. Fine-tune IndoBERT (Colab/Kaggle) dan simpan model ke HuggingFace Hub.
+6. Bandingkan macro-F1 pada gold set; evaluasi skenario 3 kelas vs 2 kelas (tanpa rating bintang 3).
+7. Jalankan BERTopic pada ulasan negatif; evaluasi coherence dan beri label topik secara manual.
 
 ## 1.10 Layar Dashboard
 
@@ -133,7 +132,7 @@ Target angka akan direvisi setelah fase riset.
 | Scope creep | Fase bertahap dan backlog v2 yang tegas. |
 | Label noisy | Gold set manual dan filter teks pendek. |
 | Scraper terblokir | Snapshot dataset, jeda antar-request, dan demo statis. |
-| Sampel bias waktu | Sampling per bulan. |
+| Jendela pendek: tidak ada klaim tren jangka panjang | Sampling per bulan. |
 | Topik tidak bermakna | Hanya ulasan negatif, tuning, dan label manual. |
 | Hosting model berat | Demo statis dan inferensi ringan. |
 | Data pribadi | Hash identitas dan cantumkan sumber data. |
