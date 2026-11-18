@@ -21,9 +21,13 @@ dependencies = [
 # model berat dipasang hanya saat diperlukan: pip install -e "./nlp[ml]"
 ml = ["torch", "transformers", "datasets", "bertopic", "Sastrawi"]
 dev = ["pytest", "ruff", "mypy"]
+notebook = ["ipykernel", "matplotlib", "seaborn"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+review_nlp = ["preprocessing/*.csv"]
 
 [tool.ruff]
 line-length = 100
