@@ -1,18 +1,7 @@
-# ADR 008: Jendela data 91 hari dengan kuota per minggu
+## Pembaruan (2026-11-18): pemilihan acak, bukan terbaru
 
-- **Status:** Diterima (menggantikan rencana "sampling per bulan")
-- **Tanggal:** 2026-11-17
-
-## Konteks
-WhatsApp memiliki volume ulasan sangat besar. Untuk analisis sentimen, jumlah
-dan keberagaman ulasan lebih penting daripada rentang waktu yang panjang.
-
-## Keputusan
-Ambil ulasan pada jendela 19 Agustus sampai 17 November 2026 (91 hari = 13 minggu
-penuh), maksimal 800 ulasan per minggu, sehingga total maksimal sekitar 10.400.
-
-## Konsekuensi
-- Tren mingguan memiliki 13 titik data.
-- Tidak ada klaim tren jangka panjang; model dilatih pada satu jendela waktu.
-- Scraper membaca dari ulasan terbaru mundur, sehingga waktu scraping bergantung
-  pada volume harian di jendela tersebut.
+Implementasi awal mengambil 800 ulasan **terbaru** tiap minggu. Karena volume harian
+WhatsApp sekitar 650-800 ulasan, kuota habis oleh satu atau dua hari terakhir tiap
+minggu (hasil: hanya 14 tanggal berbeda dari 91 hari). Sekarang scraper membaca seluruh
+ulasan dalam jendela dan memilih maksimal 800 per minggu secara **acak** (reservoir
+sampling, seed 42). Volume asli per minggu disimpan di berkas `*_weekly_volume.csv`.
