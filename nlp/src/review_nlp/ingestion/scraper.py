@@ -1,11 +1,19 @@
 import logging
+import random
 import time
 from collections import Counter
+from dataclasses import dataclass
 from datetime import date
 
 from google_play_scraper import Sort, reviews
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class ScrapeResult:
+    rows: list[dict]
+    seen_per_week: dict[int, int]  # volume asli per minggu, sebelum kuota
 
 
 def week_index(d: date, since: date) -> int:
@@ -41,19 +49,22 @@ def scrape_window(
     max_per_week: int = 800,
     sleep_s: float = 1.5,
     batch: int = 200,
-) -> list[dict]:
-    """Ambil ulasan terbaru-mundur sampai tanggal `since`, dengan kuota per minggu."""
-    kept: list[dict] = []
-    per_week: Counter = Counter()
-    seen: set[str] = set()
-    total_seen = 0
+    seed: int = 42,
+) -> ScrapeResult:
+    """Baca semua ulasan di jendela waktu, lalu pilih acak maksimal `max_per_week`
+    per minggu (reservoir sampling), sehingga seluruh hari dalam minggu terwakili."""
+    rng = random.Random(seed)
+    reservoirs: dict[int, list[dict]] = {}
+    seen_per_week: Counter = Counter()
+    seen_ids: set[str] = set()
+    total_read = 0
     token = None
 
     while True:
         page, token = _fetch(app_id, lang, country, batch, token, sleep_s)
         if not page:
             break
-        total_seen += len(page)
+        total_read += len(page)
         reached_start = False
 
         for row in page:
@@ -63,23 +74,29 @@ def scrape_window(
             if d < since:
                 reached_start = True
                 continue
-            if row["reviewId"] in seen:
+            if row["reviewId"] in seen_ids:
                 continue
+            seen_ids.add(row["reviewId"])
+
             wk = week_index(d, since)
-            if per_week[wk] >= max_per_week:
-                continue
-            per_week[wk] += 1
-            seen.add(row["reviewId"])
-            kept.append(row)
+            seen_per_week[wk] += 1
+            bucket = reservoirs.setdefault(wk, [])
+            if len(bucket) < max_per_week:
+                bucket.append(row)
+            else:
+                j = rng.randrange(seen_per_week[wk])
+                if j < max_per_week:
+                    bucket[j] = row
 
         log.info(
-            "dibaca %d | disimpan %d | tanggal terlama di halaman: %s",
-            total_seen,
-            len(kept),
+            "dibaca %d | unik dalam jendela %d | tanggal terlama di halaman: %s",
+            total_read,
+            len(seen_ids),
             page[-1]["at"].date(),
         )
         if reached_start or token is None:
             break
         time.sleep(sleep_s)
 
-    return kept
+    rows = [row for wk in sorted(reservoirs) for row in reservoirs[wk]]
+    return ScrapeResult(rows=rows, seen_per_week=dict(seen_per_week))
