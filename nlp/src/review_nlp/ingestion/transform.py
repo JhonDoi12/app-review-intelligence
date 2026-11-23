@@ -42,3 +42,13 @@ def to_frame(rows: list[dict], salt: str, since: date) -> pd.DataFrame:
             }
         )
     return pd.DataFrame.from_records(records, columns=COLUMNS)
+
+
+def refilter(df: pd.DataFrame) -> pd.DataFrame:
+    """Hitung ulang `lang` dan `exclude_reason` dari `text_raw` dengan filter terbaru,
+    tanpa scraping ulang. Data asli tidak diubah."""
+    out = df.copy()
+    hasil = out["text_raw"].map(analyze_text)
+    out["lang"] = [h[0] for h in hasil]
+    out["exclude_reason"] = [h[1] for h in hasil]
+    return out

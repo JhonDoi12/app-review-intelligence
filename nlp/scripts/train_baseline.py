@@ -1,10 +1,12 @@
 """Latih baseline TF-IDF + Logistic Regression dari snapshot Parquet."""
+
 import argparse
 from pathlib import Path
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from review_nlp.ingestion.transform import refilter
 from review_nlp.preprocessing import preprocess
 from review_nlp.sentiment.evaluate import evaluate
 from review_nlp.sentiment.labels import LABELS_3, rating_to_label
@@ -19,6 +21,7 @@ def main() -> None:
     args = p.parse_args()
 
     df = pd.read_parquet(args.file)
+    df = refilter(df)
     df = df[df["exclude_reason"].isna()].copy()
     df["label"] = df["rating"].map(rating_to_label)
     df["clean"] = df["text_raw"].map(preprocess)
@@ -28,9 +31,7 @@ def main() -> None:
         cutoff = df["week_index"].max() - 2  # 3 minggu terakhir untuk uji
         train, test = df[df["week_index"] <= cutoff], df[df["week_index"] > cutoff]
     else:
-        train, test = train_test_split(
-            df, test_size=0.2, stratify=df["label"], random_state=42
-        )
+        train, test = train_test_split(df, test_size=0.2, stratify=df["label"], random_state=42)
 
     clf = TfidfLrClassifier().fit(train["clean"], train["label"])
     pred = [r.label for r in clf.predict(test["clean"].tolist())]
