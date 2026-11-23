@@ -24,3 +24,15 @@ def test_slang_dinormalisasi():
 
 def test_negasi_dipertahankan():
     assert "tidak" in preprocess("tidak bisa kirim pesan")
+
+
+def test_huruf_gaya_unicode():
+    assert clean_text("𝗴𝗮 𝗮𝗱𝗮 𝗲𝗳𝗲𝗸") == "ga ada efek"
+
+
+def test_huruf_gaya_unicode_tetap_membawa_negasi():
+    assert preprocess("𝗴𝗮 𝗮𝗱𝗮 𝗲𝗳𝗲𝗸") == "tidak ada efek"
+
+
+def test_diakritik_dibuang():
+    assert clean_text("café") == "cafe"
