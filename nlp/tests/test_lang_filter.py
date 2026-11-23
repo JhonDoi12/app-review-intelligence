@@ -1,4 +1,4 @@
-from review_nlp.ingestion.lang_filter import analyze_text
+from review_nlp.ingestion.lang_filter import analyze_text, detect_lang
 
 
 def test_kosong():
@@ -17,4 +17,14 @@ def test_bahasa_inggris_ditandai():
 
 def test_indonesia_dipakai():
     _, reason = analyze_text("aplikasinya sering error saat saya mencoba login")
+    assert reason is None
+
+
+def test_deteksi_tidak_bergantung_huruf_besar():
+    teks = "KENAPA WHATSAPP SAYA SERING KEBLOKIR PADAHAL TIDAK NGAPA NGAPAIN"
+    assert detect_lang(teks) == detect_lang(teks.lower())
+
+
+def test_campuran_inggris_indonesia_dipakai():
+    _, reason = analyze_text("Very Good. Tapi memory hp boros banget")
     assert reason is None
