@@ -18,6 +18,7 @@ jobs:
       - run: ruff check nlp api
       - run: pytest nlp/tests
       - run: pytest api/tests
+      - run: python nlp/scripts/check_notebooks.py
 
   web:
     runs-on: ubuntu-latest
