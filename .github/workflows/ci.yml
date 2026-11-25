@@ -16,6 +16,7 @@ jobs:
           cache: pip
       - run: pip install -e "./nlp[dev]" -e "./api[dev]"
       - run: ruff check nlp api
+      - run: ruff format --check nlp api
       - run: pytest nlp/tests
       - run: pytest api/tests
       - run: python nlp/scripts/check_notebooks.py
