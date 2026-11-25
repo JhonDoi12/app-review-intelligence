@@ -16,9 +16,7 @@ class TfidfLrClassifier(SentimentClassifier):
         tfidf = TfidfVectorizer(
             ngram_range=(1, 2), min_df=3, sublinear_tf=True, max_features=100_000
         )
-        lr = LogisticRegression(
-            C=c, class_weight="balanced", max_iter=1000, random_state=seed
-        )
+        lr = LogisticRegression(C=c, class_weight="balanced", max_iter=1000, random_state=seed)
         self.pipeline = Pipeline([("tfidf", tfidf), ("lr", lr)])
 
     def fit(self, texts: Sequence[str], labels: Sequence[str]) -> Self:
