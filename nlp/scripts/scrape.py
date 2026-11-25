@@ -1,4 +1,5 @@
 """Scrape ulasan Play Store dalam satu jendela waktu dan simpan sebagai snapshot."""
+
 import argparse
 import logging
 import os
@@ -25,9 +26,7 @@ def main() -> None:
         type=int,
         default=int(os.getenv("SCRAPE_MAX_PER_WEEK", "800")),
     )
-    p.add_argument(
-        "--sleep", type=float, default=float(os.getenv("SCRAPE_SLEEP_SECONDS", "1.5"))
-    )
+    p.add_argument("--sleep", type=float, default=float(os.getenv("SCRAPE_SLEEP_SECONDS", "1.5")))
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--out-dir", default="data/raw")
     args = p.parse_args()

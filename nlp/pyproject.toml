@@ -20,7 +20,7 @@ dependencies = [
 [project.optional-dependencies]
 # model berat dipasang hanya saat diperlukan: pip install -e "./nlp[ml]"
 ml = ["torch", "transformers", "datasets", "bertopic", "Sastrawi"]
-dev = ["pytest", "ruff", "mypy"]
+dev = ["pytest", "ruff==0.17.5", "mypy"]
 notebook = ["ipykernel", "matplotlib", "seaborn"]
 
 [tool.setuptools.packages.find]
