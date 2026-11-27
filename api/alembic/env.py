@@ -2,10 +2,9 @@ import os
 from logging.config import fileConfig
 from pathlib import Path
 
+from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
-
-from alembic import context
 
 # .env ada di root repo: api/alembic/env.py -> parents[2]
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
