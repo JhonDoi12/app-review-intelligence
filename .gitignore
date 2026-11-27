@@ -3,6 +3,7 @@
 *.env.local
 
 # data & model (gold set boleh di-commit)
+data/gold/
 data/raw/
 data/interim/
 data/processed/
